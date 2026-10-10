@@ -9,7 +9,7 @@ class State{
     String getState();
 
   private:
-    String state[6] = {"Normal", "Set Alarm", "Set Hour", "Set Minute", "Save", "Snooze"};
+    String state[4] = {"Normal", "Alarm", "Set Hour", "Set Minute"};
     int stateIndex = 0;
     int stateLength = sizeof(state) / sizeof(state[0]);
 };
