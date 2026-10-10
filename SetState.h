@@ -10,7 +10,7 @@ class State{
     String getState();
 
   private:
-    String state[] = "Normal";
+    String state = "Normal";
 };
 
 #endif
