@@ -5,12 +5,13 @@
 
 class State{
   public:
-    void setState(String newState);
-    String editMode();
+    void changeState(int addition);
     String getState();
 
   private:
-    String state = "Normal";
+    String state[6] = {"Normal", "Set Alarm", "Set Hour", "Set Minute", "Save", "Snooze"};
+    int stateIndex = 0;
+    int stateLength = sizeof(state) / sizeof(state[0]);
 };
 
 #endif

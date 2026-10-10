@@ -56,24 +56,26 @@ void loop(){
   Serial.println(buttonState);
 
   if (lastButtonState == HIGH && buttonState == LOW){
-    state.setState(state.getState() == "Normal" ? "Set Alarm" : "Normal");
+    state.changeState(1);
     delay(50);
   }
   
   currentTime = millis();
   
-  if (state.getState() != "Set Alarm" && (currentTime - startTime >= timeTick || true)){
+  if (currentTime - startTime >= timeTick){
     startTime = millis();
-
+  }
+  
+  if (state.getState() != "Set Alarm" && state.getState() != "Set Hour" && state.getState() != "Set Minute"){
     disp.closePrint();
     disp.printDisplay(getTimee.printTime());
     disp.addPrint("Mode: " + state.getState());
     disp.show();
   }
 
-  if (state.getState() == "Set Alarm"){
+  if (state.getState() == "Set Alarm" || state.getState() == "Set Hour" || state.getState() == "Set Minute"){
     disp.closePrint();
-    disp.printDisplay(state.editMode());
+    disp.printDisplay(state.getState());
     disp.show();
   }
 
