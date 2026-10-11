@@ -10,6 +10,9 @@ class GetTime{
   private:
     struct tm alarmTime;
     bool alarmEnabled = false;
+    bool snoozeEnabled = false;
+    unsigned long snoozeStart = 0;
+    const unsigned long SNOOZE_MS = 5 * 60 * 1000UL;
 
   public:
     GetTime();
@@ -20,6 +23,10 @@ class GetTime{
     void disableAlarm();
     bool getAlarm();
     bool checkTime();
+
+    void enableSnooze();
+    void disableSnooze();
+    bool checkSnooze();
     
     void setTheTime();  
     String printTime();  

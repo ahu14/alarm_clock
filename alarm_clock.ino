@@ -8,6 +8,7 @@
 
 #define MODE 19
 #define UP 23
+#define ALARM 5
 
 GetTime getTimee;
 SetDisplay disp;
@@ -15,11 +16,14 @@ State state;
 
 int lastButtonState;
 int buttonState;
+
+int lastUpState;
 int upState;
 
 int startTime;
 int currentTime;
 int timeTick = 1000;
+unsigned long lastBeep = 0;
 
 void setup(){
   Serial.begin(115200);
@@ -27,6 +31,7 @@ void setup(){
   
   pinMode(MODE, INPUT_PULLUP);
   pinMode(UP, INPUT_PULLUP);
+  pinMode(ALARM, OUTPUT);
   
   tryToConnect();
   disp.checkNSetDisplay();
@@ -47,6 +52,8 @@ void setup(){
 
 void loop(){
   lastButtonState = buttonState;
+  lastUpState = upState;
+  
   buttonState = digitalRead(MODE);
   upState = digitalRead(UP);
 
@@ -57,14 +64,34 @@ void loop(){
   Serial.print("\tUp State: ");
   Serial.println(upState);*/
 
-  Serial.print(getTimee.printAlarm());
-  Serial.print("\t" + getTimee.printTime());
-  Serial.println("\t" + getTimee.checkTime());
-  
+  Serial.println(getTimee.checkSnooze());
+
   if (lastButtonState == HIGH && buttonState == LOW){
-    state.changeState(1);
+    if (getTimee.checkTime() && getTimee.getAlarm()){
+      getTimee.disableAlarm();
+      getTimee.disableSnooze();
+      noTone(ALARM);
+    }
+    
+    else{
+      state.changeState(1);
+    }
+    
     delay(50);
   }
+
+  if (getTimee.checkSnooze()){
+    disp.closePrint();
+    disp.addPrint("Mode: " + state.getState());
+    disp.printDisplay("Wakey wakeyyy");
+    disp.show(); 
+
+    if (millis() - lastBeep >= 600){
+      lastBeep = millis();
+      tone(ALARM, 500, 200);
+    } 
+  }
+  
   
   currentTime = millis();
   
@@ -73,15 +100,14 @@ void loop(){
   }
 
   if (getTimee.checkTime() && getTimee.getAlarm() && state.getState() == "Normal"){
-    if (upState == LOW){
-      getTimee.disableAlarm();
-    }
+    disp.closePrint();
+    disp.addPrint("Mode: " + state.getState());
+    disp.printDisplay("Wakey wakeyyy");
+    disp.show(); 
 
-    else{
-      disp.closePrint();
-      disp.addPrint("Mode: " + state.getState());
-      disp.printDisplay("Wakey wakeyyy");
-      disp.show(); 
+    if (millis() - lastBeep >= 600){
+      lastBeep = millis();
+      tone(ALARM, 500, 200);
     }
   }
   
@@ -111,7 +137,7 @@ void loop(){
     if (state.getState() == "Set Hour" && upState == LOW){
       getTimee.enableAlarm();
       getTimee.addHour();
-      delay(50); 
+      delay(70); 
     }
   
     if (state.getState() == "Set Minute" && upState == LOW){

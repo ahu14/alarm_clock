@@ -39,15 +39,34 @@ bool GetTime::getAlarm(){
   return alarmEnabled;
 }
 
+void GetTime::enableSnooze(){
+  snoozeEnabled = true;
+  snoozeStart = millis();
+}
+
+void GetTime::disableSnooze(){
+  snoozeEnabled = false;
+}
+
+bool GetTime::checkSnooze(){
+  if (!snoozeEnabled) return false;
+
+  if (millis() - snoozeStart >= SNOOZE_MS){
+    snoozeEnabled = false;
+    return true;
+  }
+  
+  return false;
+}
+
+
 bool GetTime::checkTime(){
+  if (snoozeEnabled) return false;
+  
   struct tm timeinfo;
   getLocalTime(&timeinfo);
 
-  if (alarmEnabled && timeinfo.tm_hour == alarmTime.tm_hour && timeinfo.tm_min == alarmTime.tm_min){
-    return true;
-  }
-
-  return false;
+  return (alarmEnabled && timeinfo.tm_hour == alarmTime.tm_hour && timeinfo.tm_min == alarmTime.tm_min);
 }
 
 
