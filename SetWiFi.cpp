@@ -3,8 +3,10 @@
 #include <Wire.h>
 #include <WiFi.h>
 
-char *ssid = "ikan";
-char *password = "ikannn12";
+#include "WiFiConfig.h"
+
+char *ssid = SSID;
+char *password = PASSWORD;
 
 void tryToConnect(){
   WiFi.begin(ssid, password);

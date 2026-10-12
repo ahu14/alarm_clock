@@ -19,7 +19,7 @@ void GetTime::addHour(){
 void GetTime::addMinute(){
   if (alarmTime.tm_min >= 59){
     alarmTime.tm_min = 0;
-    alarmTime.tm_hour += 1;
+    addHour();
   }
 
   else{
@@ -41,28 +41,27 @@ bool GetTime::getAlarm(){
 
 void GetTime::enableSnooze(){
   snoozeEnabled = true;
-  snoozeStart = millis();
+
+  if (alarmTime.tm_min >= 55){
+    alarmTime.tm_min = alarmTime.tm_min + 5 - 60;
+    alarmTime.tm_hour = alarmTime.tm_hour >= 23 ? 0 : alarmTime.tm_hour + 1;
+  }
+
+  else{
+    alarmTime.tm_min += 5; 
+  }
 }
 
 void GetTime::disableSnooze(){
   snoozeEnabled = false;
 }
 
-bool GetTime::checkSnooze(){
-  if (!snoozeEnabled) return false;
-
-  if (millis() - snoozeStart >= SNOOZE_MS){
-    snoozeEnabled = false;
-    return true;
-  }
-  
-  return false;
+bool GetTime::getSnooze(){
+  return snoozeEnabled;
 }
 
 
 bool GetTime::checkTime(){
-  if (snoozeEnabled) return false;
-  
   struct tm timeinfo;
   getLocalTime(&timeinfo);
 

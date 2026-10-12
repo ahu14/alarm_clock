@@ -56,15 +56,7 @@ void loop(){
   
   buttonState = digitalRead(MODE);
   upState = digitalRead(UP);
-
-  /*Serial.print("Last Button State: ");
-  Serial.print(lastButtonState);
-  Serial.print("\tButton State: ");
-  Serial.print(buttonState);
-  Serial.print("\tUp State: ");
-  Serial.println(upState);*/
-
-  Serial.println(getTimee.checkSnooze());
+  
 
   if (lastButtonState == HIGH && buttonState == LOW){
     if (getTimee.checkTime() && getTimee.getAlarm()){
@@ -80,18 +72,11 @@ void loop(){
     delay(50);
   }
 
-  if (getTimee.checkSnooze()){
-    disp.closePrint();
-    disp.addPrint("Mode: " + state.getState());
-    disp.printDisplay("Wakey wakeyyy");
-    disp.show(); 
-
-    if (millis() - lastBeep >= 600){
-      lastBeep = millis();
-      tone(ALARM, 500, 200);
-    } 
+  if (lastUpState == HIGH && upState == LOW){
+    if (getTimee.checkTime() && getTimee.getAlarm() && state.getState() == "Normal"){
+      getTimee.enableSnooze();
+    }
   }
-  
   
   currentTime = millis();
   
@@ -101,8 +86,13 @@ void loop(){
 
   if (getTimee.checkTime() && getTimee.getAlarm() && state.getState() == "Normal"){
     disp.closePrint();
-    disp.addPrint("Mode: " + state.getState());
-    disp.printDisplay("Wakey wakeyyy");
+    disp.printDisplay("Mode: " + state.getState());
+    disp.addPrint("Wakey wakeyyy");
+
+    if (getTimee.getSnooze()){
+      disp.addPrint(" 5 minutes pass already");
+    }
+    
     disp.show(); 
 
     if (millis() - lastBeep >= 600){
@@ -115,7 +105,15 @@ void loop(){
     disp.closePrint();
     disp.printDisplay(getTimee.printTime());
     disp.addPrint("Mode: " + state.getState());
-    disp.addPrint("Alarm is " + String(getTimee.getAlarm()));
+
+    if (getTimee.getAlarm()){
+      disp.addPrint("Alarm is on");
+    }
+
+    else{
+      disp.addPrint("Alarm is off");  
+    }
+    
     disp.addPrint("Alarm is set at " +getTimee.printAlarm());
     disp.show(); 
   }
@@ -128,7 +126,15 @@ void loop(){
     disp.closePrint();
     disp.printDisplay(getTimee.printTime());
     disp.addPrint("Mode: " + state.getState());
-    disp.addPrint("Alarm is " + String(getTimee.getAlarm()));
+
+    if (getTimee.getAlarm()){
+      disp.addPrint("Alarm is on");
+    }
+
+    else{
+      disp.addPrint("Alarm is off");  
+    }
+    
     disp.addPrint("Alarm is set at " +getTimee.printAlarm());
     disp.show(); 
   }
@@ -136,12 +142,14 @@ void loop(){
   else{
     if (state.getState() == "Set Hour" && upState == LOW){
       getTimee.enableAlarm();
+      getTimee.disableSnooze();
       getTimee.addHour();
       delay(70); 
     }
   
     if (state.getState() == "Set Minute" && upState == LOW){
       getTimee.enableAlarm();
+      getTimee.disableSnooze();
       getTimee.addMinute();
       delay(70);
     }

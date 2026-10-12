@@ -12,7 +12,6 @@ class GetTime{
     bool alarmEnabled = false;
     bool snoozeEnabled = false;
     unsigned long snoozeStart = 0;
-    const unsigned long SNOOZE_MS = 5 * 60 * 1000UL;
 
   public:
     GetTime();
@@ -26,7 +25,7 @@ class GetTime{
 
     void enableSnooze();
     void disableSnooze();
-    bool checkSnooze();
+    bool getSnooze();
     
     void setTheTime();  
     String printTime();  
